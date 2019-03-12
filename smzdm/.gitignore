@@ -1,0 +1,5 @@
+users.json
+chromedriver
+/__pycache__/
+.DS_Store
+/log/
