@@ -1,5 +1,5 @@
 #!/bin/bash
 
 
-cd /root/solution/dpFreeDine/
+cd /root/solution/jdtry/
 python36 main.py
