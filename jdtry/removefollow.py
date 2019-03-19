@@ -7,7 +7,8 @@ import config
 from log import logger
 
 def getFollowList(user):
-    url = 'https://t.jd.com/follow/vender/qryCategories.do?qryKey=&_={0}'.format(time.time())
+    url = 'https://t.jd.com/follow/vender/qryCategories.do?qryKey=&_={0}'.format(
+        time.time())
     follows = []
     setHeader(user)
 
