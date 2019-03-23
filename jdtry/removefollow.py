@@ -1,9 +1,6 @@
-﻿import urllib.request
-import json
+﻿import json
 import time
-from bs4 import BeautifulSoup
 import request
-import config
 from log import logger
 
 def getFollowList(user):
@@ -27,8 +24,9 @@ def getFollowList(user):
         logger.error(ex)
 
     logger.info(follows)
-    return follows
+    logger.info("关注店铺总数:{0}".format(len(follows)))
 
+    return follows
 
 def setHeader(user):
     user["headers"].update({
@@ -55,10 +53,11 @@ def removeFollow(user, vendor):
 
 
 def remove(user):
-    follows = getFollowList(user)
-    if (follows and len(follows) > 300):
-        for follow in follows:
-            removeFollow(user, follow)
+    while True:
+        follows = getFollowList(user)
+        if (follows and len(follows) > 0):
+            for follow in follows:
+                removeFollow(user, follow)
 
 
 
