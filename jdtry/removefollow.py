@@ -58,6 +58,8 @@ def remove(user):
         if (follows and len(follows) > 0):
             for follow in follows:
                 removeFollow(user, follow)
+        else:
+            break
 
 
 
