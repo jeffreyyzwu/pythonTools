@@ -5,8 +5,8 @@ from log import logger
 
 def randomSleep():
     stime = 0.3
-    while stime < 0.5:
-        stime = round(random.random() * 10 / 3.657, 3)
+    while stime < 10:
+        stime = round(random.random() * 30 / 1.657, 3)
 
     logger.info('random sleep:{0}s'.format(stime))
     time.sleep(stime)
