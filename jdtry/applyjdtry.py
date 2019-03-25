@@ -97,16 +97,15 @@ def applyTryProd(user, prodId):
         "Referer": url
     })
 
-    try:
-        response = request.openUrl(url, user, {})
-        content = str(response.read(), 'utf-8')
-        decodeContent = json.loads(content)
-        logger.info(decodeContent)
+    response = request.openUrl(url, user, {})
+    content = str(response.read(), 'utf-8')
+    decodeContent = json.loads(content)
 
-    except Exception as ex:
-        logger.error("申请试用产品报错, url:{0}".format(url))
-        logger.error(content)
-        logger.error(ex)
+    status = decodeContent["code"]
+    if (status == '-131'):
+        raise Exception('apply times has been the limit')
+
+    logger.info(decodeContent)
 
 
 def getProductProperty():
@@ -129,6 +128,10 @@ def getProductProperty():
 
 
 def apply(user):
-    props = getProductProperty()
-    for prop in props:
-        applyAllTryProducts(user, prop)
+    try:
+        props = getProductProperty()
+        for prop in props:
+            applyAllTryProducts(user, prop)
+            
+    except Exception as ex:
+        logger.error(ex)
