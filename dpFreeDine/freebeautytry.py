@@ -76,7 +76,7 @@ def getShopDetail(prod, user):
         "shopType" : shop["shopType"]
     })
 
-    logger.info(prod)
+    # logger.info(prod)
 
 
 def signFreeBeautyTry(prod, user):
@@ -113,4 +113,4 @@ def signFreeBeautyTry(prod, user):
 
     soup = BeautifulSoup(content, "html.parser")
     for result in soup.find_all('div', {"class": "result-text"}):
-        logger.info(prod["name"], ': ', result.get_text(strip=True))
+        logger.info(prod["name"] + ': ' + result.get_text(strip=True))
