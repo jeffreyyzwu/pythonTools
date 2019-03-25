@@ -13,7 +13,8 @@ def applyAllTryProducts(user, prop):
     while page <= totalPage:
         totalPage = getTryProductList(allTryProds, user, prop, page)
         alreadyApplyTryProducts = getAlreadyApplyTryProduct(allTryProds, user)
-        notApplyTryProds = excludeProducts(allTryProds,alreadyApplyTryProducts)
+        notApplyTryProds = excludeProducts(
+            allTryProds, alreadyApplyTryProducts)
 
         if (notApplyTryProds and len(notApplyTryProds)):
             logger.info("未申请的试用产品:{0}".format(notApplyTryProds))
@@ -21,7 +22,8 @@ def applyAllTryProducts(user, prop):
                 applyTryProd(user, prodId)
 
         page = page + 1
-        allTryProds=[]
+        allTryProds = []
+
 
 def excludeProducts(allTryProds, alreadyApplyTryProducts):
     result = []
@@ -29,12 +31,14 @@ def excludeProducts(allTryProds, alreadyApplyTryProducts):
         prodId = int(prod)
         if prodId not in alreadyApplyTryProducts:
             result.append(prodId)
-    
+
     return result
+
 
 def getAlreadyApplyTryProduct(allTryProds, user):
     prodIds = ','.join(allTryProds)
-    url = 'https://try.jd.com/user/getApplyStateByActivityIds?activityIds={0}'.format(prodIds)
+    url = 'https://try.jd.com/user/getApplyStateByActivityIds?activityIds={0}'.format(
+        prodIds)
     user["headers"].update({
         "Referer": url
     })
@@ -54,8 +58,9 @@ def getAlreadyApplyTryProduct(allTryProds, user):
         logger.error("获取已申请试用产品报错, url:{0}".format(url))
         logger.error(content)
         logger.error(ex)
-    
+
     return result
+
 
 def getTryProductList(allTryProds, user, prop, page):
     url = 'https://try.jd.com/activity/getActivityList?page={0}&activityType=1&activityState=0&cids={1}'.format(
@@ -68,7 +73,7 @@ def getTryProductList(allTryProds, user, prop, page):
 
     try:
         response = request.openUrl(url, user, {})
-        
+
         time.sleep(1)
         content = str(response.read(), 'utf-8')
         soup = BeautifulSoup(content, "html.parser")
@@ -86,13 +91,14 @@ def getTryProductList(allTryProds, user, prop, page):
         logger.error(ex)
 
     # logger.info(allTryProds)
-    #logger.info("试用产品总数:{0}".format(len(allTryProds)))
+    # logger.info("试用产品总数:{0}".format(len(allTryProds)))
 
     return totalPage
 
 
 def applyTryProd(user, prodId):
-    url = 'https://try.jd.com/migrate/apply?activityId={0}&source=0'.format(prodId)
+    url = 'https://try.jd.com/migrate/apply?activityId={0}&source=0'.format(
+        prodId)
     user["headers"].update({
         "Referer": url
     })
@@ -132,6 +138,6 @@ def apply(user):
         props = getProductProperty()
         for prop in props:
             applyAllTryProducts(user, prop)
-            
+
     except Exception as ex:
         logger.error(ex)

@@ -8,9 +8,13 @@ from log import logger
 
 def fetchFreeBeautyTry(user):
     config.getConfig(user)
-    prodList = getFreeBeautyTryList(user)
+    prodList, shopList = getFreeBeautyTryList(user)
     for prod in prodList:
         signFreeBeautyTry(prod, user)
+
+    for shop in shopList:
+        getShopDetail(shop, user)
+        signFreeBeautyTry(shop, user)
 
 
 def getFreeBeautyTryList(user):
@@ -23,12 +27,56 @@ def getFreeBeautyTryList(user):
     for prod in decodeContent["data"]["goodProductList"]:
         if (prod["hasRegister"] == False):
             prodList.append({
-               "id": prod["id"],
-               "name": prod["name"]
+                "id": prod["id"],
+                "name": prod["name"]
             })
-    logger.info('-----获取以下未申请的免费试用,总数:{0}---\n{1}'.format(len(prodList), prodList))
+    logger.info(
+        '-----获取以下未申请的免费试用,总数:{0}---\n{1}'.format(len(prodList), prodList))
 
-    return prodList
+    shopList = []
+    for shop in decodeContent["data"]["experienceProductList"]:
+        if (shop["hasRegister"] == False):
+            shopList.append({
+                "id": shop["id"],
+                "name": shop["simpleName"],
+                "price": shop["price"]
+            })
+    logger.info(
+        '-----获取以下未申请的0元探新店产品试用,总数:{0}---\n{1}'.format(len(shopList), shopList))
+
+    return prodList, shopList
+
+
+def getShopDetail(prod, user):
+    url = 'https://m.dianping.com/beautytry/productlist/detail'
+    params = {
+        "channel": 1,
+        "category": 0,
+        "userid": '',
+        "longitude": '',
+        "latitude": '',
+        "dpid": '',
+        "productid": prod["id"],
+        "productbackendid": 0,
+        "cityid": 7,
+        "utm_source": 'rb'
+    }
+    fetchUrl = "?".join([url, urllib.parse.urlencode(params)])
+    user["headers"].update({
+        "Host": "m.dianping.com",
+        "Referer": fetchUrl + '&businesskey=',
+        "Upgrade-Insecure-Requests": "1",
+        "DNT": "1"
+    })
+    response = request.openUrl(fetchUrl, user, {})
+    jsondata = json.loads(response.read())
+    shop = jsondata["data"]["selectShop"]
+    prod.update({
+        "shopId" : shop["shopId"],
+        "shopType" : shop["shopType"]
+    })
+
+    logger.info(prod)
 
 
 def signFreeBeautyTry(prod, user):
@@ -49,7 +97,7 @@ def signFreeBeautyTry(prod, user):
         "mina_name": "",
         "productid": prod["id"],
         "source": "",
-        "shopid": "",
+        "shopid": prod["shopId"],
         "mobile": user["phone"]
     }
     queryParams = urllib.parse.urlencode(params)
@@ -64,6 +112,5 @@ def signFreeBeautyTry(prod, user):
     content = response.read()
 
     soup = BeautifulSoup(content, "html.parser")
-    for result in soup.find_all('div',{"class":"result-text"}):
-        logger.info(prod["name"],': ', result.get_text(strip=True))
-        
+    for result in soup.find_all('div', {"class": "result-text"}):
+        logger.info(prod["name"], ': ', result.get_text(strip=True))
