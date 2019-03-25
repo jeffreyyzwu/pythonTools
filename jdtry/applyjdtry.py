@@ -48,7 +48,7 @@ def getAlreadyApplyTryProduct(allTryProds, user):
         for item in decodeContent:
             result.append(item["activityId"])
 
-        logger.info(result)
+        # logger.info(result)
 
     except Exception as ex:
         logger.error("获取已申请试用产品报错, url:{0}".format(url))
@@ -85,7 +85,7 @@ def getTryProductList(allTryProds, user, prop, page):
         logger.error(content)
         logger.error(ex)
 
-    logger.info(allTryProds)
+    # logger.info(allTryProds)
     #logger.info("试用产品总数:{0}".format(len(allTryProds)))
 
     return totalPage

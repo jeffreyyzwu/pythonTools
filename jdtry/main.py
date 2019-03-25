@@ -5,6 +5,7 @@ from log import logger
 
 def main():
     logger.info('----------------------------开始搬砖--------------------------------')
+
     users = config.getUsers()
     for user in users:
         user["headers"]={}
