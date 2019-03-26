@@ -13,8 +13,8 @@ def main():
         if (token and len(token) > 0):
             logger.info('--------------用户切换成功:{0},开始报名--------------'.format(user["phone"]))
 
-            # freecheckin.checkin(user)
-            # freedine.fetchFreeDine(user)
+            freecheckin.checkin(user)
+            freedine.fetchFreeDine(user)
             freebeautytry.fetchFreeBeautyTry(user)
 
             logger.info('--------------用户:{0}报名结束--------------'.format(user["phone"]))
