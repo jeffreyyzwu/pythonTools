@@ -2,4 +2,4 @@
 
 
 cd /root/solution/jdtry/
-python36 main.py
+python36 main.py > /dev/null 2>&1 &
