@@ -97,7 +97,7 @@ def signFreeBeautyTry(prod, user):
         "mina_name": "",
         "productid": prod["id"],
         "source": "",
-        "shopid": prod["shopId"],
+        "shopid": prod.get("shopId",''),
         "mobile": user["phone"]
     }
     queryParams = urllib.parse.urlencode(params)
