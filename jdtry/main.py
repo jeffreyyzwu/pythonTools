@@ -14,7 +14,7 @@ def main():
             logger.info('--------------用户切换成功:{0},开始报名--------------'.format(user["phone"]))
 
             removefollow.remove(user)
-            if (user.get("apply", True)):
+            if (user.get("apply", "true") != "true"):
                 applyjdtry.apply(user)
 
             logger.info('--------------用户:{0}报名结束--------------'.format(user["phone"]))
