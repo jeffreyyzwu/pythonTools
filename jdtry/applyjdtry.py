@@ -110,6 +110,9 @@ def applyTryProd(user, prodId):
     status = decodeContent["code"]
     if (status == '-131'):
         raise Exception('apply times has been the limit')
+    if (status == '-600'):
+        user["token"] = ""
+        raise Exception("please login first")
 
     logger.info(decodeContent)
 
