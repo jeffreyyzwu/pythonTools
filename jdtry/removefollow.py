@@ -2,6 +2,7 @@
 import time
 import request
 from log import logger
+import config
 
 def getFollowList(user):
     url = 'https://t.jd.com/follow/vender/qryCategories.do?qryKey=&_={0}'.format(
@@ -14,13 +15,20 @@ def getFollowList(user):
         content = str(response.read(), 'utf-8')
         decodeContent = json.loads(content)
 
-        for category in decodeContent["data"]:
-            for entry in category["entityIdSet"]:
-                follows.append(entry)
+        if decodeContent.__contains__("data"):
+            for category in decodeContent.get("data",[]):
+                for entry in category["entityIdSet"]:
+                    follows.append(entry)
+        else:
+            logger.error(decodeContent)
+            if (decodeContent.get("error","") == "NotLogin"):
+                user["token"] = ""
+                config.saveUserConfig(user)
+            
 
     except Exception as ex:
         logger.error("获取店铺关注列表报错, url:{0}".format(url))
-        logger.error(content)
+        logger.error(decodeContent)
         logger.error(ex)
 
     logger.info(follows)

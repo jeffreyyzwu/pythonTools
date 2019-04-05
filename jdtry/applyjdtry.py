@@ -3,7 +3,7 @@ import time
 import request
 from log import logger
 from bs4 import BeautifulSoup
-
+import config
 
 def applyAllTryProducts(user, prop):
     totalPage = 10
@@ -112,6 +112,7 @@ def applyTryProd(user, prodId):
         raise Exception('apply times has been the limit')
     if (status == '-600'):
         user["token"] = ""
+        config.saveUserConfig(user)
         raise Exception("please login first")
 
     logger.info(decodeContent)
