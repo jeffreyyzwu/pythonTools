@@ -13,10 +13,9 @@ def applyAllTryProducts(user, prop):
     while page <= totalPage:
         totalPage = getTryProductList(allTryProds, user, prop, page)
         alreadyApplyTryProducts = getAlreadyApplyTryProduct(allTryProds, user)
-        notApplyTryProds = excludeProducts(
-            allTryProds, alreadyApplyTryProducts)
+        notApplyTryProds = excludeProducts(allTryProds, alreadyApplyTryProducts)
 
-        if (notApplyTryProds and len(notApplyTryProds)):
+        if (notApplyTryProds and len(notApplyTryProds) > 0):
             logger.info("未申请的试用产品:{0}".format(notApplyTryProds))
             for prodId in notApplyTryProds:
                 applyTryProd(user, prodId)
@@ -70,6 +69,7 @@ def getTryProductList(allTryProds, user, prop, page):
         "Referer": url
     })
     totalPage = 1
+    # baseprice = user.get("baseprice", 50)
 
     try:
         response = request.openUrl(url, user, {})
@@ -79,6 +79,8 @@ def getTryProductList(allTryProds, user, prop, page):
         soup = BeautifulSoup(content, "html.parser")
 
         for result in soup.find_all('li', {"class": "item"}):
+            # logger.info(result.find_all('div',{"class":"p-price"}))
+            # prodprice = int(result.div.div)
             allTryProds.append(result.get("activity_id"))
 
         for result in soup.find_all('span', {"class": "p-skip"}):
@@ -123,9 +125,9 @@ def getProductProperty():
         {"cids": "737", "name": "家用电器"},
         {"cids": "12218", "name": "生鲜美食"},
         {"cids": "1320,12259", "name": "食品饮料"},
+        {"cids": "1316", "name": "美妆护肤"},
         {"cids": "15901", "name": "家庭清洁"},
         {"cids": "1620,6728,9847,9855,6196,15248,14065", "name": "家居家装"},
-        {"cids": "1316", "name": "美妆护肤"},
         {"cids": "5025,6144", "name": "钟表奢品"},
         {"cids": "652,9987", "name": "手机数码"},
         {"cids": "670", "name": "电脑办公"},

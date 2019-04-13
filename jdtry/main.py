@@ -13,7 +13,7 @@ def main():
         if (token and len(token) > 0):
             logger.info('--------------用户切换成功:{0},开始报名--------------'.format(user["phone"]))
 
-            removefollow.remove(user)
+            # removefollow.remove(user)
             if (user.get("apply", "true") == "true"):
                 applyjdtry.apply(user)
 

@@ -58,9 +58,12 @@ def getFreeDineList(page, stype, user):
     actList = []
 
     try:
+        logger.info(url)
         response = request.openUrl(url, user, {})
         content = str(response.read(), 'utf-8')
         decodeContent = json.loads(content)
+        logger.info(content)
+        exit()
 
         for act in decodeContent["data"]["mobileActivitys"]:
             actList.append({
@@ -135,8 +138,8 @@ def getSuccessSaveFreeDine(user):
 
 
 def fetchFreeDine(user):
-    # 1: 美食, 2:美容, 3:婚嫁 4:亲子  6:玩乐
-    for stype in [1, 2, 6]:
+    # 1: 美食, 2:美容, 3:婚嫁 4:亲子  6:玩乐 10:生活服务
+    for stype in [1, 2, 6, 10]:
         config.getConfig(user)
         dineList = getAllFreeDineList(user, stype)
         for dine in dineList:
