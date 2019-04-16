@@ -63,7 +63,6 @@ def getFreeDineList(page, stype, user):
         content = str(response.read(), 'utf-8')
         decodeContent = json.loads(content)
         logger.info(content)
-        exit()
 
         for act in decodeContent["data"]["mobileActivitys"]:
             actList.append({
