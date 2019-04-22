@@ -1,4 +1,5 @@
 import json
+import mail
 from log import logger
 
 
@@ -50,3 +51,23 @@ def getConfig(user):
     })
 
     return user
+
+
+
+def getSystem():
+    with open('conf/system.json', encoding='utf-8-sig') as json_file:
+        sys = json.load(json_file)
+        json_file.close()
+        return sys    
+
+
+def checkToken():
+    msg = ""
+    users = getUsers()
+    for user in users:
+        token = user["token"]
+        if (not token or len(token) == 0):
+            msg += "用户:{0} token失效,请重新获取;\r\n".format(user["phone"])
+
+    if (len(msg) > 0):
+        mail.send('点评霸王餐申请系统告警', msg)
