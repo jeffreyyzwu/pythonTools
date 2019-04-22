@@ -1,4 +1,5 @@
 import json
+import mail
 from log import logger
 
 
@@ -16,6 +17,7 @@ def getUsers():
 
         json_file.close()
         return enableUsers
+
 
 def saveUserConfig(user):
     logger.info("------保存更新token到users配置文件中--------")
@@ -37,3 +39,21 @@ def saveUserConfig(user):
     except Exception as ex:
         logger.error(ex)
 
+
+def getSystem():
+    with open('conf/system.json', encoding='utf-8-sig') as json_file:
+        sys = json.load(json_file)
+        json_file.close()
+        return sys    
+
+
+def checkToken():
+    msg = ""
+    users = getUsers()
+    for user in users:
+        token = user["token"]
+        if (not token or len(token) == 0):
+            msg += "用户:{0} token失效,请重新获取;\r\n".format(user["phone"])
+
+    if (len(msg) > 0):
+        mail.send('京东试用申请系统告警', msg)

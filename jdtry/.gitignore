@@ -1,4 +1,5 @@
 users.json
+system.json
 chromedriver
 /__pycache__/
 .DS_Store
