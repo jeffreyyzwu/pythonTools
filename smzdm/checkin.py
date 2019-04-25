@@ -23,4 +23,5 @@ def checkin(config):
     url = 'https://zhiyou.smzdm.com/user/checkin/jsonp_checkin'
     response = request.openUrl(url, config, {})
     content = response.read().decode('utf-8')
+
     logger.info("张大妈签到结果:{0}".format(content))

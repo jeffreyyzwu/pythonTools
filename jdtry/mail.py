@@ -27,7 +27,7 @@ def send(subject, mailbody):
     msg.attach(MIMEText(mailbody, 'plain', 'utf-8'))
 
     # 设置邮箱服务器地址以及端口
-    smtp_server = "smtp.yeah.net"
+    smtp_server = system["mail"]["smtp_server"]
     server = smtplib.SMTP(smtp_server, 25)
     server.set_debuglevel(1)
     # 登陆邮箱
