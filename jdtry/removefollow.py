@@ -24,7 +24,8 @@ def getFollowList(user):
             if (decodeContent.get("error","") == "NotLogin"):
                 user["token"] = ""
                 config.saveUserConfig(user)
-            
+                logger.info("clear token and save to config file")
+
 
     except Exception as ex:
         logger.error("获取店铺关注列表报错, url:{0}".format(url))

@@ -110,11 +110,13 @@ def applyTryProd(user, prodId):
     decodeContent = json.loads(content)
 
     status = decodeContent["code"]
+    logger.info(decodeContent)
     if (status == '-131'):
         raise Exception('apply times has been the limit')
     if (status == '-600'):
         user["token"] = ""
         config.saveUserConfig(user)
+        logger.info("clear token and save to config file")
         raise Exception("please login first")
 
     logger.info(decodeContent)
