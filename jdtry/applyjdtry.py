@@ -8,25 +8,25 @@ import config
 def applyAllTryProducts(user, prop):
     totalPage = 10
     page = 1
-    allTryProds = []
+    allTryProducts = []
 
     while page <= totalPage:
-        totalPage = getTryProductList(allTryProds, user, prop, page)
-        alreadyApplyTryProducts = getAlreadyApplyTryProduct(allTryProds, user)
-        notApplyTryProds = excludeProducts(allTryProds, alreadyApplyTryProducts)
+        totalPage = getTryProductList(allTryProducts, user, prop, page)
+        alreadyApplyTryProducts = getAlreadyApplyTryProduct(allTryProducts, user)
+        notApplyTryProds = excludeProducts(allTryProducts, alreadyApplyTryProducts)
 
         if (notApplyTryProds and len(notApplyTryProds) > 0):
             logger.info("未申请的试用产品:{0}".format(notApplyTryProds))
             for prodId in notApplyTryProds:
-                applyTryProd(user, prodId)
+                applyTryProduct(user, prodId)
 
         page = page + 1
-        allTryProds = []
+        allTryProducts = []
 
 
-def excludeProducts(allTryProds, alreadyApplyTryProducts):
+def excludeProducts(allTryProducts, alreadyApplyTryProducts):
     result = []
-    for prod in allTryProds:
+    for prod in allTryProducts:
         prodId = int(prod)
         if prodId not in alreadyApplyTryProducts:
             result.append(prodId)
@@ -34,8 +34,8 @@ def excludeProducts(allTryProds, alreadyApplyTryProducts):
     return result
 
 
-def getAlreadyApplyTryProduct(allTryProds, user):
-    prodIds = ','.join(allTryProds)
+def getAlreadyApplyTryProduct(allTryProducts, user):
+    prodIds = ','.join(allTryProducts)
     url = 'https://try.jd.com/user/getApplyStateByActivityIds?activityIds={0}'.format(
         prodIds)
     user["headers"].update({
@@ -61,7 +61,7 @@ def getAlreadyApplyTryProduct(allTryProds, user):
     return result
 
 
-def getTryProductList(allTryProds, user, prop, page):
+def getTryProductList(allTryProducts, user, prop, page):
     url = 'https://try.jd.com/activity/getActivityList?page={0}&activityType=1&activityState=0&cids={1}'.format(
         page, prop["cids"])
     user["headers"].update({
@@ -81,7 +81,7 @@ def getTryProductList(allTryProds, user, prop, page):
         for result in soup.find_all('li', {"class": "item"}):
             # logger.info(result.find_all('div',{"class":"p-price"}))
             # prodprice = int(result.div.div)
-            allTryProds.append(result.get("activity_id"))
+            allTryProducts.append(result.get("activity_id"))
 
         for result in soup.find_all('span', {"class": "p-skip"}):
             totalPage = int(result.em.b.get_text(strip=True))
@@ -92,13 +92,13 @@ def getTryProductList(allTryProds, user, prop, page):
         logger.error(content)
         logger.error(ex)
 
-    # logger.info(allTryProds)
-    # logger.info("试用产品总数:{0}".format(len(allTryProds)))
+    # logger.info(allTryProducts)
+    # logger.info("试用产品总数:{0}".format(len(allTryProducts)))
 
     return totalPage
 
 
-def applyTryProd(user, prodId):
+def applyTryProduct(user, prodId):
     url = 'https://try.jd.com/migrate/apply?activityId={0}&source=0'.format(
         prodId)
     user["headers"].update({
@@ -144,6 +144,7 @@ def getProductProperty():
 def apply(user):
     try:
         props = getProductProperty()
+        applyCategories = user.get("apply", props)
         for prop in props:
             applyAllTryProducts(user, prop)
 
