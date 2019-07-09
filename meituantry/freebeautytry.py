@@ -99,7 +99,7 @@ def signFreeBeautyTry(prod, user):
         "category": "0",
         "catid": "50",
         "utm_source": "rb",
-        "cityid": "7",
+        "cityid": "30",
         "ci": "",
         "mina_name": "",
         "productid": prod["id"],
