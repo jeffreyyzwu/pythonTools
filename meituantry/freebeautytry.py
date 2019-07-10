@@ -25,10 +25,10 @@ def getFreeBeautyTryList(user):
 
     response = request.openUrl(url, user, {})
     content = response.read()
-    logger.info(content)
+    # logger.debug(content)
 
     decodeContent = json.loads(content)
-    logger.info(decodeContent)
+    logger.debug(decodeContent)
 
     prodList = []
     for prod in decodeContent["data"]["goodProductList"]:
