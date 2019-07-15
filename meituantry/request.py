@@ -3,8 +3,9 @@ import random
 import time
 from log import logger
 
+
 def randomSleep():
-    stime = round(random.uniform(3,7), 3)
+    stime = round(random.uniform(3, 7), 3)
 
     logger.info('random sleep:{0}s'.format(stime))
     time.sleep(stime)
@@ -56,6 +57,7 @@ def setHeader(config, url):
     }
     defaultHeaders.update(headers)
     config["headers"] = defaultHeaders
+
 
 def openUrl(url, config, data):
     randomSleep()

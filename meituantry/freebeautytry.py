@@ -2,14 +2,13 @@ import json
 import request
 import config
 import urllib
+import os.path
 from bs4 import BeautifulSoup
 from log import logger
 
 
 def fetchFreeBeautyTry(user):
     config.getConfig(user)
-    logger.debug("start to get free beauty try products list")
-
     prodList, shopList = getFreeBeautyTryList(user)
     for prod in prodList:
         signFreeBeautyTry(prod, user)
@@ -18,17 +17,17 @@ def fetchFreeBeautyTry(user):
         getShopDetail(shop, user)
         signFreeBeautyTry(shop, user)
 
+
 def getFreeBeautyTryList(user):
-    url = 'https://i.meituan.com/beautytry/productlist?token={0}&channel=10&category=0&period=0&cityid=30&longitude=113.947168&latitude=22.544371&dpid=&type=0'
+    url = 'https://i.meituan.com/beautytry/productlist?token={0}&channel=10&category=0&period=0&cityid=30&longitude=&latitude=&dpid=&type=0'
     url = url.format(user["token"])
-    logger.debug(url)
 
     response = request.openUrl(url, user, {})
     content = response.read()
     # logger.debug(content)
 
     decodeContent = json.loads(content)
-    logger.debug(decodeContent)
+    # logger.debug(decodeContent)
 
     prodList = []
     for prod in decodeContent["data"]["goodProductList"]:
@@ -77,13 +76,33 @@ def getShopDetail(prod, user):
         return
 
     jsondata = json.loads(content)
+    shopId = getShopId(jsondata)
     shop = jsondata["data"]["selectShop"]
     prod.update({
-        "shopId" : shop["shopId"],
-        "shopType" : shop["shopType"]
+        "shopId": shopId,
+        "shopType": shop["shopType"]
     })
 
     logger.info(prod)
+
+
+def getShopId(data):
+    shopUrl = data["data"]["shopUrl"]
+    url = urllib.parse.urlparse(shopUrl)
+    if url.scheme == "imeituan":
+        params = urllib.parse.parse_qs(url.query)
+        logger.debug(params)
+
+        if "id" in params:
+            shopId = params["id"][0]
+            return shopId
+        else:
+            logger.error("无法获取shopid", shopUrl)
+            return ''
+    else:
+        result = os.path.split(url.path)
+        shopId = result[1]
+        return shopId
 
 
 def signFreeBeautyTry(prod, user):
@@ -94,18 +113,24 @@ def signFreeBeautyTry(prod, user):
         "lng": "*",
         "latitude": "*",
         "lat": "*",
-        "dpid": "*",
-        "channel": "1",
+        "dpid": "",
+        "channel": "10",
         "category": "0",
-        "catid": "50",
+        "catid": "22",
         "utm_source": "rb",
         "cityid": "30",
-        "ci": "",
+        "ci": "30",
         "mina_name": "",
         "productid": prod["id"],
         "source": "",
-        "shopid": prod.get("shopId",''),
-        "mobile": user["phone"]
+        "shopid": prod.get("shopId", ''),
+        "mobile": user["phone"],
+        "utm_source": "rb",
+        "utm_medium": "iphone",
+        "f": "iphone",
+        "version_name": "10.0.601",
+        "regionid": "",
+        "mina_name": ""
     }
     queryParams = urllib.parse.urlencode(params)
     fetchUrl = "?".join([url, queryParams])
