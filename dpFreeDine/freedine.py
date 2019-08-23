@@ -83,9 +83,9 @@ def getFreeDineList(page, stype, user):
 def get_date():
     current_date = datetime.strftime(datetime.now(), "%Y-%m-%d")
     cur_year = datetime.now().year
-    for date in ['-01-01','-03-01','-05-01', '-06-01', '-08-08','-09-09', '-10-01']:
-       for plus in [0,1]:
-           cal_date = (cur_year+plus) + date
+    for plus in [0,1]:
+        for date in ['-01-01','-03-01','-05-01', '-06-01', '-08-08','-09-09', '-10-01']:
+           cal_date = str(cur_year+plus) + date
            if (cal_date > current_date):
                 logger.info("-----日期:{0}-----".format(cal_date))
                 return cal_date
