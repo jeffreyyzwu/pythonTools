@@ -105,7 +105,7 @@ def get_request_data(dine, user, stype):
             "shippingAddress": "",
             "extraCount": "",
             "birthdayStr": "",
-            "email":"",
+            "email":"landair@yeah.net",
             "babyBirths":"",
             "pregnant":"",
             "comboId":"",
