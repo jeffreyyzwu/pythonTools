@@ -1,5 +1,6 @@
 ﻿import urllib.request
 import json
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import request
 import config
@@ -79,17 +80,51 @@ def getFreeDineList(page, stype, user):
         '---获取第{0}页,type:{2}霸王餐, size:{1}---'.format(page, len(actList), stype))
     return actList
 
+def get_date():
+    current_date = datetime.strftime(datetime.now(), "%Y-%m-%d")
+    cur_year = datetime.now().year
+    for date in ['-01-01','-03-01','-05-01', '-06-01', '-08-08','-09-09', '-10-01']:
+       for plus in [0,1]:
+           cal_date = (cur_year+plus) + date
+           if (cal_date > current_date):
+                logger.info("-----日期:{0}-----".format(cal_date))
+                return cal_date
 
-def signUpFreeDine(dine, user):
-    data = {
-        "passCardNo": "",
-        "phoneNo": user["phone"],
-        "cx": "",
-        "uuid": "",
-        "offlineActivityId": dine["id"],
-        "env": 1,
-        "source": "null"
-    }
+    modified_date = datetime.now() + timedelta(days=100)
+    cal_date = datetime.strftime(modified_date, "%Y-%m-%d")
+    logger.info("-----日期:{0}-----".format(cal_date))
+    return cal_date
+
+def get_request_data(dine, user, stype):
+    if (stype in [3]):
+        return {
+            "offlineActivityId": dine["id"],
+            "phoneNo": user["phone"],
+            "marryDayStr": get_date(),
+            "marryStatus": 0,
+            "shippingAddress": "",
+            "extraCount": "",
+            "birthdayStr": "",
+            "email":"",
+            "babyBirths":"",
+            "pregnant":"",
+            "comboId":"",
+            "branchId":"",
+            "usePassCard":0,
+            "passCardNo": ""
+        }
+    else:
+        return {
+            "passCardNo": "",
+            "phoneNo": user["phone"],
+            "cx": "",
+            "uuid": "",
+            "offlineActivityId": dine["id"],
+            "env": 1,
+            "source": "null"
+        }
+def signUpFreeDine(dine, user, stype):
+    data = get_request_data(dine, user, stype)
     url = 'http://s.dianping.com/ajax/json/activity/offline/saveApplyInfo'
     user["headers"].update({
         "Host": "s.dianping.com",
@@ -137,11 +172,11 @@ def getSuccessSaveFreeDine(user):
 
 
 def fetchFreeDine(user):
-    # 1: 美食, 2:美容, 3:婚嫁 4:亲子  6:玩乐 10:生活服务
-    for stype in [1, 2, 6, 10]:
+    # 1: 美食, 2:美容, 3:婚嫁 4:亲子  6:玩乐 10:生活服务 99:其他
+    for stype in [3, 1, 2, 6, 10, 99]:
         config.getConfig(user)
         dineList = getAllFreeDineList(user, stype)
         for dine in dineList:
-            signUpFreeDine(dine, user)
+            signUpFreeDine(dine, user, stype)
 
     getSuccessSaveFreeDine(user)
