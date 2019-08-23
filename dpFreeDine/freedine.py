@@ -81,7 +81,7 @@ def getFreeDineList(page, stype, user):
     return actList
 
 def get_date():
-    current_date = datetime.strftime(datetime.now(), "%Y-%m-%d")
+    current_date = datetime.strftime(datetime.now()+ timedelta(days=60), "%Y-%m-%d")
     cur_year = datetime.now().year
     for plus in [0,1]:
         for date in ['-01-01','-03-01','-05-01', '-06-01', '-08-08','-09-09', '-10-01']:
