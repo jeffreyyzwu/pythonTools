@@ -90,10 +90,7 @@ def get_date():
                 logger.info("-----日期:{0}-----".format(cal_date))
                 return cal_date
 
-    modified_date = datetime.now() + timedelta(days=100)
-    cal_date = datetime.strftime(modified_date, "%Y-%m-%d")
-    logger.info("-----日期:{0}-----".format(cal_date))
-    return cal_date
+    return current_date
 
 def get_request_data(dine, user, stype):
     if (stype in [3]):
