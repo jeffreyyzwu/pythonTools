@@ -18,6 +18,8 @@ def applyAllTryProducts(user, prop):
         if (notApplyTryProds and len(notApplyTryProds) > 0):
             logger.info("未申请的试用产品:{0}".format(notApplyTryProds))
             for prodId in notApplyTryProds:
+                vendorId = getVendorByProductId(user, prodId)
+                followVendor(user, vendorId)
                 applyTryProduct(user, prodId)
 
         page = page + 1
@@ -69,7 +71,6 @@ def getTryProductList(allTryProducts, user, prop, page):
         "Referer": url
     })
     totalPage = 1
-    # baseprice = user.get("baseprice", 50)
 
     try:
         response = request.openUrl(url, user, {})
@@ -79,8 +80,6 @@ def getTryProductList(allTryProducts, user, prop, page):
         soup = BeautifulSoup(content, "html.parser")
 
         for result in soup.find_all('li', {"class": "item"}):
-            # logger.info(result.find_all('div',{"class":"p-price"}))
-            # prodprice = int(result.div.div)
             allTryProducts.append(result.get("activity_id"))
 
         for result in soup.find_all('span', {"class": "p-skip"}):
@@ -97,6 +96,36 @@ def getTryProductList(allTryProducts, user, prop, page):
 
     return totalPage
 
+def getVendorByProductId(user, prodId):
+    url = 'http://try.jd.com/migrate/getActivityById?id={0}'.format(
+        prodId)
+    user["headers"].update({
+        "Referer": url
+    })
+
+    response = request.openUrl(url, user, {})
+    content = str(response.read(), 'utf-8')
+    decodeContent = json.loads(content)
+
+    shopInfo = decodeContent["data"]["shopInfo"]
+    logger.info(shopInfo)
+    
+    shopId = shopInfo["shopId"]
+    logger.info("shop id:{0}".format(shopId))
+
+    return shopId
+
+def followVendor(user, venderId):
+    url = 'http://try.jd.com/migrate/follow?_s={0}&venderId={1}'.format('pc',
+        venderId)
+    user["headers"].update({
+        "Referer": url
+    })
+
+    response = request.openUrl(url, user, {})
+    content = str(response.read(), 'utf-8')
+    decodeContent = json.loads(content)
+    logger.info("follow shop result:{0}".format(decodeContent))
 
 def applyTryProduct(user, prodId):
     url = 'https://try.jd.com/migrate/apply?activityId={0}&source=0'.format(
@@ -108,19 +137,18 @@ def applyTryProduct(user, prodId):
     response = request.openUrl(url, user, {})
     content = str(response.read(), 'utf-8')
     decodeContent = json.loads(content)
+    logger.info(decodeContent)
 
     status = decodeContent["code"]
-    logger.info(decodeContent)
+    logger.info(status)
+
     if (status == '-131'):
-        raise Exception('apply times has been the limit')
+        raise Exception('apply times is limited')
     if (status == '-600'):
         user["token"] = ""
         config.saveUserConfig(user)
-        logger.info("clear token and save to config file")
+        logger.info("clear token and save to user config file")
         raise Exception("please login first")
-
-    logger.info(decodeContent)
-
 
 def getProductProperty():
     return [
