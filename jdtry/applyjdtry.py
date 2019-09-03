@@ -88,11 +88,8 @@ def getTryProductList(allTryProducts, user, prop, page):
 
     except Exception as ex:
         logger.error("获取试用产品列表报错, url:{0}".format(url))
-        logger.error(content)
         logger.error(ex)
-
-    # logger.info(allTryProducts)
-    # logger.info("试用产品总数:{0}".format(len(allTryProducts)))
+        logger.error(content)
 
     return totalPage
 
@@ -100,7 +97,8 @@ def getVendorByProductId(user, prodId):
     url = 'http://try.jd.com/migrate/getActivityById?id={0}'.format(
         prodId)
     user["headers"].update({
-        "Referer": url
+        "Referer": url,
+        "Host": "try.jd.com"
     })
 
     response = request.openUrl(url, user, {})
@@ -171,6 +169,7 @@ def hottryapply(user):
 
     url = 'http://try.jd.com'
     user["headers"].update({
+        "Host": "try.jd.com",
         "Referer": url
     })
 
@@ -195,8 +194,8 @@ def hottryapply(user):
 
     except Exception as ex:
         logger.error("获取试用产品列表报错, url:{0}".format(url))
-        logger.error(content)
         logger.error(ex)
+        logger.error(content)
 
     logger.info("热门试用产品结束申请")
 
