@@ -75,7 +75,7 @@ def getTryProductList(allTryProducts, user, prop, page):
     try:
         response = request.openUrl(url, user, {})
 
-        time.sleep(1)
+        # time.sleep(1)
         content = str(response.read(), 'utf-8')
         soup = BeautifulSoup(content, "html.parser")
 
@@ -137,11 +137,9 @@ def applyTryProduct(user, prodId):
     response = request.openUrl(url, user, {})
     content = str(response.read(), 'utf-8')
     decodeContent = json.loads(content)
-    logger.info(decodeContent)
+    logger.info("apply product result:{0}".format(decodeContent))
 
     status = decodeContent["code"]
-    logger.info(status)
-
     if (status == '-131'):
         raise Exception('apply times is limited')
     if (status == '-600'):
@@ -168,9 +166,44 @@ def getProductProperty():
         {"cids": "4938,13314,6994,9192,12473,6196,5272,12379,13678,15083,15126,15980", "name": "更多惊喜"}
     ]
 
+def hottryapply(user):
+    logger.info("热门试用产品开始申请")
+
+    url = 'http://try.jd.com'
+    user["headers"].update({
+        "Referer": url
+    })
+
+    try:
+        response = request.openUrl(url, user, {})
+        logger.info("open web ing")
+        content = str(response.read(), 'utf-8')
+        soup = BeautifulSoup(content, "html.parser")
+        hottryprods = []
+
+        for result in soup.find_all('li', {"class": "ui-switchable-panel"}):
+            activityId = result.get("activity_id")
+            if (not activityId is None):
+                hottryprods.append(activityId)
+
+        logger.info("热门试用产品:{0}".format(hottryprods))
+
+        for prodId in hottryprods:
+            vendorId = getVendorByProductId(user, prodId)
+            followVendor(user, vendorId)
+            applyTryProduct(user, prodId)
+
+    except Exception as ex:
+        logger.error("获取试用产品列表报错, url:{0}".format(url))
+        logger.error(content)
+        logger.error(ex)
+
+    logger.info("热门试用产品结束申请")
 
 def apply(user):
     try:
+        hottryapply(user)
+
         props = getProductProperty()
         applyCategories = user.get("apply", props)
         for prop in props:
