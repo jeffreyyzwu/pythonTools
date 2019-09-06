@@ -9,7 +9,7 @@ def saveUserConfig(user):
 def refreshToken(user):
     logger.info("-----更新token-------")
 
-    user["token"] = ''
+    token = ''
     logger.info(user)
 
     if (token and len(token) == 0):

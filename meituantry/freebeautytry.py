@@ -71,7 +71,7 @@ def getShopDetail(prod, user):
     response = request.openUrl(fetchUrl, user, {})
     content = response.read()
     if b'<!DOCTYPE html>' in content:
-        logger.debug('repose content is html')
+        logger.debug('reponse content is html')
         # logger.debug(content)
         return
 
@@ -91,7 +91,7 @@ def getShopId(data):
     url = urllib.parse.urlparse(shopUrl)
     if url.scheme == "imeituan":
         params = urllib.parse.parse_qs(url.query)
-        logger.debug(params)
+        # logger.debug(params)
 
         if "id" in params:
             shopId = params["id"][0]

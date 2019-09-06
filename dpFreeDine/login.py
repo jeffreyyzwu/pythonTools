@@ -1,5 +1,5 @@
 from log import logger
-from dpaccount import DianPingAccount
+# from dpaccount import DianPingAccount
 import config
 
 
@@ -9,18 +9,7 @@ def saveUserConfig(user):
 
 def refreshToken(user):
     logger.info("-----更新token-------")
-    userLogin = DianPingAccount(user)
-    token = userLogin.login()
-
-    user["token"] = token
-    logger.info(user)
-
-    if (token and len(token) == 0):
-        logger.info('user:{0} login fail'.format(user["phone"]))
-    else:
-        saveUserConfig(user)
-        logger.info('user:{0} login success, token:{1}'.format(
-            user["phone"], token))
+    token = ''
 
     return token
 

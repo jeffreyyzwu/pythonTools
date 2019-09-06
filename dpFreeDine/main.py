@@ -3,6 +3,7 @@ import login
 import freedine
 import freebeautytry
 import freecheckin
+import freefuntry
 from log import logger
 
 def main():
@@ -16,6 +17,7 @@ def main():
             freecheckin.checkin(user)
             freedine.fetchFreeDine(user)
             freebeautytry.fetchFreeBeautyTry(user)
+            freefuntry.fetch(user)
 
             logger.info('--------------用户:{0}报名结束--------------'.format(user["phone"]))
 
