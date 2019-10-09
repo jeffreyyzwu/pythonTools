@@ -10,7 +10,8 @@ def saveUserConfig(user):
 def refreshToken(user):
     logger.info("-----更新token-------")
     token = ''
-
+    user["token"] = token
+    saveUserConfig(user)
     return token
 
 
