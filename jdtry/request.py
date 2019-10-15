@@ -5,7 +5,7 @@ from log import logger
 
 
 def randomSleep():
-    stime = round(random.uniform(6, 10), 3)
+    stime = round(random.uniform(8, 16), 3)
 
     logger.info('random sleep:{0}s'.format(stime))
     time.sleep(stime)
