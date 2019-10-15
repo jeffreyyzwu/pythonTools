@@ -29,7 +29,6 @@ def getFollowList(user):
 
     except Exception as ex:
         logger.error("获取店铺关注列表报错, url:{0}".format(url))
-        logger.error(decodeContent)
         logger.error(ex)
 
     logger.info(follows)
@@ -57,7 +56,6 @@ def removeFollow(user, vendor):
 
     except Exception as ex:
         logger.error("取消店铺关注列表报错, url:{0}".format(url))
-        logger.error(content)
         logger.error(ex)
 
 
