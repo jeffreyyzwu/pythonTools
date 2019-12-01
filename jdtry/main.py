@@ -2,7 +2,6 @@ import config
 import removefollow
 import applyjdtry
 from log import logger
-# from jdlogin import *
 
 def main():
     logger.info('----------------------------开始搬砖--------------------------------')

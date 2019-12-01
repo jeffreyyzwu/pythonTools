@@ -1,73 +1,70 @@
 # -*- coding:utf-8 -*-
 
 import time
-import requests
+import json
+import config
 from bs4 import BeautifulSoup
 from log import logger
+from selenium import webdriver
+
+# chromedriver download address
+# https://chromedriver.storage.googleapis.com/index.html
 
 
 class jdlogin:
-    def __init__(self, user):
-        self.headers = {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36'
-                                      ' (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36',
-                        'Referer': 'https://www.jd.com/',
-                        }
-        self.login_url = "https://passport.jd.com/new/login.aspx"
-        self.post_url = "https://passport.jd.com/uc/loginService"
-        self.auth_url = "https://passport.jd.com/uc/showAuthCode"
-        self.session = requests.session()
-        self.username = user["phone"]
-        self.password = user["password"]
+    def __init__(self):
+        self.users = config.getUsers()
 
-    def get_login_info(self):
-        html = self.session.get(self.login_url, headers=self.headers).content
-        soup = BeautifulSoup(html, 'html')
-
-        uuid = soup.select('#uuid')[0].get('value')
-        eid = soup.select('#eid')[0].get('value')
-        fp = soup.select('input[name="fp"]')[0].get('value')  # session id
-        _t = soup.select('input[name="_t"]')[0].get('value')  # token
-        login_type = soup.select('input[name="loginType"]')[0].get('value')
-        pub_key = soup.select('input[name="pubKey"]')[0].get('value')
-        sa_token = soup.select('input[name="sa_token"]')[0].get('value')
-
-        auth_page = self.session.post(self.auth_url,
-                                      data={'loginName': self.username, 'nloginpwd': self.password}).text
-
-        data = {
-            'uuid': uuid,
-            'eid': eid,
-            'fp': fp,
-            '_t': _t,
-            'loginType': login_type,
-            'loginname': self.username,
-            'nloginpwd': self.password,
-            'chkRememberMe': True,
-            'pubKey': pub_key,
-            'sa_token': sa_token
-            }
-        return data
-
-    def login(self):
-        data = self.get_login_info()
-        headers = {
-                    'Referer': self.post_url,
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36'
-                                  ' (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36',
-                    'X-Requested-With': 'XMLHttpRequest'
-                  }
+    def _login_account_token(self, user):
+        option = webdriver.ChromeOptions()
+        # 隐私模式
+        option.add_argument("--incognito")
+        browser = webdriver.Chrome(chrome_options=option,  executable_path=r'./chromedriver')
+        token = ''
         try:
-            login_page = self.session.post(self.post_url, data=data, headers=headers)
-            logger.info(login_page.text)
-        except Exception as e:
-            logger.error(e)
+            browser.get('https://passport.jd.com/new/login.aspx')
+            accountbutton = browser.find_element_by_css_selector(
+                'div.login-tab.login-tab-r a')
+            accountbutton.click()
 
-        # self.session.cookies.clear()
+            uinput = browser.find_element_by_id('loginname')
+            uinput.send_keys(user["phone"])
+            pinput = browser.find_element_by_id('nloginpwd')
+            pinput.send_keys(user['password'])
+            button = browser.find_element_by_id('loginsubmit')
+            button.click()
+            time.sleep(10)
 
-    def shopping(self):
-        login = self.session.post('https://cart.jd.com/cart.action', headers=self.headers)
-        logger.info(login.text)
+            for cookie in browser.get_cookies():
+                print(cookie)
+                # print('name='+cookie["name"])
+                # print('value='+cookie["value"])
+                if ("thor" == cookie["name"] and ".jd.com" == cookie["domain"]):
+                    token = cookie["value"]
+
+        finally:
+            browser.close()
+
+        return token
+    
+    def refresh_token(self):
+        if (len(self.users) == 0):
+            logger.info("获取用户信息失败")
+            return
+
+        for user in self.users:
+            token = self._login_account_token(user)
+            if (len(token) == 0):
+                logger.error('获取用户[{0}]token失败'.format(user["phone"]))
+                return
+            user["token"] = token
+            config.saveUserConfig(user)
+            logger.info('获取用户[{0}]token成功,token:[{1}]'.format(user["phone"], user["token"]))
+        
+if __name__ == '__main__':
+    login = jdlogin()
+    login.refresh_token()
+
 
 
 
