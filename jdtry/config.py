@@ -27,6 +27,9 @@ def saveUserConfig(user):
             for config in usersConfig:
                 if (config["phone"] == user["phone"]):
                     config["token"] = user["token"]
+                    if (user.__contains__("time")):
+                        config["time"] = user["time"]
+
                     break
 
             with open('conf/users.json', mode="w", encoding='utf-8-sig') as json_write_file:

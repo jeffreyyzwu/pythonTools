@@ -74,13 +74,21 @@ def getTryProductList(allTryProducts, user, prop, page):
 
     try:
         response = request.openUrl(url, user, {})
+        logger.info("all try product url:{0}".format(url))
 
-        # time.sleep(1)
         content = str(response.read(), 'utf-8')
+        # logger.info("html content response:{0}".format(content))
         soup = BeautifulSoup(content, "html.parser")
 
         for result in soup.find_all('li', {"class": "item"}):
-            allTryProducts.append(result.get("activity_id"))
+            # logger.info("result:{0}".format(result))
+            # time.sleep(1)
+
+            activityId = result.get("activity_id")
+            # logger.info("activityId:{0}".format(activityId))
+            if activityId is not None:
+                allTryProducts.append(activityId)
+        logger.info("allTryProducts:{0}".format(allTryProducts))
 
         for result in soup.find_all('span', {"class": "p-skip"}):
             totalPage = int(result.em.b.get_text(strip=True))
@@ -103,7 +111,11 @@ def getVendorByProductId(user, prodId):
 
     response = request.openUrl(url, user, {})
     content = str(response.read(), 'utf-8')
+    # logger.info("vendor response content:{0}".format(content))
     decodeContent = json.loads(content)
+
+    if "data" not in decodeContent:
+        return 0
 
     shopInfo = decodeContent["data"]["shopInfo"]
     logger.info(shopInfo)
@@ -132,19 +144,23 @@ def applyTryProduct(user, prodId):
         "Referer": url
     })
 
-    response = request.openUrl(url, user, {})
-    content = str(response.read(), 'utf-8')
-    decodeContent = json.loads(content)
-    logger.info("apply product result:{0}".format(decodeContent))
+    try:
+        response = request.openUrl(url, user, {})
+        content = str(response.read(), 'utf-8')
+        decodeContent = json.loads(content)
+        logger.info("apply product id:{0}, result:{1}".format(prodId, decodeContent))
 
-    status = decodeContent["code"]
-    if (status == '-131'):
-        raise Exception('apply times is limited')
-    if (status == '-600'):
-        user["token"] = ""
-        config.saveUserConfig(user)
-        logger.info("clear token and save to user config file")
-        raise Exception("please login first")
+        status = decodeContent["code"]
+        if (status == '-131'):
+            raise Exception('apply times is limited')
+        if (status == '-600'):
+            user["token"] = ""
+            config.saveUserConfig(user)
+            logger.info("clear token and save to user config file")
+            raise Exception("please login first")
+
+    except Exception as ex:
+        logger.error(ex)        
 
 def getProductProperty():
     return [
@@ -175,7 +191,7 @@ def hottryapply(user):
 
     try:
         response = request.openUrl(url, user, {})
-        logger.info("open web ing")
+        logger.info("opening web")
         content = str(response.read(), 'utf-8')
         soup = BeautifulSoup(content, "html.parser")
         hottryprods = []
