@@ -11,19 +11,25 @@ def applyAllTryProducts(user, prop):
     allTryProducts = []
 
     while page <= totalPage:
-        totalPage = getTryProductList(allTryProducts, user, prop, page)
-        alreadyApplyTryProducts = getAlreadyApplyTryProduct(allTryProducts, user)
-        notApplyTryProds = excludeProducts(allTryProducts, alreadyApplyTryProducts)
+        try:
+            totalPage = getTryProductList(allTryProducts, user, prop, page)
+            alreadyApplyTryProducts = getAlreadyApplyTryProduct(allTryProducts, user)
+            notApplyTryProds = excludeProducts(allTryProducts, alreadyApplyTryProducts)
 
-        if (notApplyTryProds and len(notApplyTryProds) > 0):
-            logger.info("未申请的试用产品:{0}".format(notApplyTryProds))
-            for prodId in notApplyTryProds:
-                vendorId = getVendorByProductId(user, prodId)
-                followVendor(user, vendorId)
-                applyTryProduct(user, prodId)
+            if (notApplyTryProds and len(notApplyTryProds) > 0):
+                logger.info("未申请的试用产品:{0}".format(notApplyTryProds))
+                for prodId in notApplyTryProds:
+                    vendorId = getVendorByProductId(user, prodId)
+                    followVendor(user, vendorId)
+                    applyTryProduct(user, prodId)
 
-        page = page + 1
-        allTryProducts = []
+            page = page + 1
+            allTryProducts = []
+
+        except Exception as ex:
+            logger.error("applyAllTryProducts")
+            logger.error(ex)
+
 
 
 def excludeProducts(allTryProducts, alreadyApplyTryProducts):
@@ -109,21 +115,26 @@ def getVendorByProductId(user, prodId):
         "Host": "try.jd.com"
     })
 
-    response = request.openUrl(url, user, {})
-    content = str(response.read(), 'utf-8')
-    # logger.info("vendor response content:{0}".format(content))
-    decodeContent = json.loads(content)
+    try:
+        response = request.openUrl(url, user, {})
+        content = str(response.read(), 'utf-8')
+        # logger.info("vendor response content:{0}".format(content))
+        decodeContent = json.loads(content)
 
-    if "data" not in decodeContent:
+        if "data" not in decodeContent:
+            return 0
+
+        shopInfo = decodeContent["data"]["shopInfo"]
+        logger.info(shopInfo)
+        
+        shopId = shopInfo["shopId"]
+        logger.info("shop id:{0}".format(shopId))
+
+        return shopId
+    except Exception as ex:
+        logger.error(ex)
         return 0
 
-    shopInfo = decodeContent["data"]["shopInfo"]
-    logger.info(shopInfo)
-    
-    shopId = shopInfo["shopId"]
-    logger.info("shop id:{0}".format(shopId))
-
-    return shopId
 
 def followVendor(user, venderId):
     url = 'http://try.jd.com/migrate/follow?_s={0}&venderId={1}'.format('pc',

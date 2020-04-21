@@ -43,7 +43,7 @@ class jdlogin:
 
             button = browser.find_element_by_id('loginsubmit')
             button.click()
-            time.sleep(15)
+            time.sleep(35)
 
             for cookie in browser.get_cookies():
                 print(cookie)
