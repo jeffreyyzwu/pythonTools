@@ -155,23 +155,20 @@ def applyTryProduct(user, prodId):
         "Referer": url
     })
 
-    try:
-        response = request.openUrl(url, user, {})
-        content = str(response.read(), 'utf-8')
-        decodeContent = json.loads(content)
-        logger.info("apply product id:{0}, result:{1}".format(prodId, decodeContent))
+    response = request.openUrl(url, user, {})
+    content = str(response.read(), 'utf-8')
+    decodeContent = json.loads(content)
+    logger.info("apply product id:{0}, result:{1}".format(prodId, decodeContent))
 
-        status = decodeContent["code"]
-        if (status == '-131'):
-            raise Exception('apply times is limited')
-        if (status == '-600'):
-            user["token"] = ""
-            config.saveUserConfig(user)
-            logger.info("clear token and save to user config file")
-            raise Exception("please login first")
+    status = decodeContent["code"]
+    if (status == '-131'):
+        raise Exception('apply times is limited')
+    if (status == '-600'):
+        user["token"] = ""
+        config.saveUserConfig(user)
+        logger.info("clear token and save to user config file")
+        raise Exception("please login first")
 
-    except Exception as ex:
-        logger.error(ex)        
 
 def getProductProperty():
     return [
