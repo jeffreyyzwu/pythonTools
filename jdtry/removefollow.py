@@ -16,11 +16,12 @@ def getFollowList(user):
         decodeContent = json.loads(content)
 
         if decodeContent.__contains__("data"):
+            # logger.info(decodeContent)
             for category in decodeContent.get("data",[]):
                 for entry in category["entityIdSet"]:
                     follows.append(entry)
         else:
-            logger.error(decodeContent)
+            # logger.error(decodeContent)
             if (decodeContent.get("error","") == "NotLogin"):
                 user["token"] = ""
                 config.saveUserConfig(user)
@@ -28,11 +29,11 @@ def getFollowList(user):
 
 
     except Exception as ex:
-        logger.error("获取店铺关注列表报错, url:{0}".format(url))
+        logger.error("user:{1}获取店铺关注列表报错, url:{0}".format(url, user["phone"]))
         logger.error(ex)
 
     logger.info(follows)
-    logger.info("关注店铺总数:{0}".format(len(follows)))
+    logger.info("user:{1}关注店铺总数:{0}".format(len(follows), user["phone"]))
 
     return follows
 
@@ -51,11 +52,11 @@ def removeFollow(user, vendor):
     try:
         response = request.openUrl(url, user, {})
         content = str(response.read(), 'utf-8')
-        decodeContent = json.loads(content)
-        logger.info(decodeContent)
+        # decodeContent = json.loads(content)
+        logger.info(content)
 
     except Exception as ex:
-        logger.error("取消店铺关注列表报错, url:{0}".format(url))
+        logger.error("user:{1}取消店铺关注列表报错, url:{0}".format(url, user["phone"]))
         logger.error(ex)
 
 

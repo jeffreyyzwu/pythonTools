@@ -17,7 +17,7 @@ def applyAllTryProducts(user, prop):
             notApplyTryProds = excludeProducts(allTryProducts, alreadyApplyTryProducts)
 
             if (notApplyTryProds and len(notApplyTryProds) > 0):
-                logger.info("未申请的试用产品:{0}".format(notApplyTryProds))
+                logger.info("user:{1}未申请的试用产品:{0}".format(notApplyTryProds, user["phone"]))
                 for prodId in notApplyTryProds:
                     vendorId = getVendorByProductId(user, prodId)
                     followVendor(user, vendorId)
@@ -80,7 +80,7 @@ def getTryProductList(allTryProducts, user, prop, page):
 
     try:
         response = request.openUrl(url, user, {})
-        logger.info("all try product url:{0}".format(url))
+        # logger.info("all try product url:{0}".format(url))
 
         content = str(response.read(), 'utf-8')
         # logger.info("html content response:{0}".format(content))
@@ -128,7 +128,7 @@ def getVendorByProductId(user, prodId):
         logger.info(shopInfo)
         
         shopId = shopInfo["shopId"]
-        logger.info("shop id:{0}".format(shopId))
+        # logger.info("shop id:{0}".format(shopId))
 
         return shopId
     except Exception as ex:
@@ -146,7 +146,7 @@ def followVendor(user, venderId):
     response = request.openUrl(url, user, {})
     content = str(response.read(), 'utf-8')
     decodeContent = json.loads(content)
-    logger.info("follow shop result:{0}".format(decodeContent))
+    logger.info("user:{1}follow shop result:{0}".format(decodeContent, user["phone"]))
 
 def applyTryProduct(user, prodId):
     url = 'https://try.jd.com/migrate/apply?activityId={0}&source=0'.format(
@@ -158,16 +158,16 @@ def applyTryProduct(user, prodId):
     response = request.openUrl(url, user, {})
     content = str(response.read(), 'utf-8')
     decodeContent = json.loads(content)
-    logger.info("apply product id:{0}, result:{1}".format(prodId, decodeContent))
+    logger.info("user:{2}apply product id:{0}, result:{1}".format(prodId, decodeContent, user["phone"]))
 
     status = decodeContent["code"]
     if (status == '-131'):
-        raise Exception('apply times is limited')
+        raise Exception('user:{0}apply times is limited'.format(user["phone"]))
     if (status == '-600'):
         user["token"] = ""
         config.saveUserConfig(user)
         logger.info("clear token and save to user config file")
-        raise Exception("please login first")
+        raise Exception("user:{0}please login first".format(user["phone"]))
 
 
 def getProductProperty():
@@ -209,7 +209,7 @@ def hottryapply(user):
             if (not activityId is None):
                 hottryprods.append(activityId)
 
-        logger.info("热门试用产品:{0}".format(hottryprods))
+        logger.info("user:{1}热门试用产品:{0}".format(hottryprods, user["phone"]))
 
         for prodId in hottryprods:
             vendorId = getVendorByProductId(user, prodId)
@@ -221,7 +221,7 @@ def hottryapply(user):
         logger.error(ex)
         logger.error(content)
 
-    logger.info("热门试用产品结束申请")
+    logger.info("user:{0}热门试用产品结束申请".format(user["phone"]))
 
 def apply(user):
     try:
