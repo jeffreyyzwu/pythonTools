@@ -63,7 +63,7 @@ def removeFollow(user, vendor):
 def remove(user):
     while True:
         follows = getFollowList(user)
-        if (follows and len(follows) > 0):
+        if (follows and len(follows) > 100):
             for follow in follows:
                 removeFollow(user, follow)
         else:
