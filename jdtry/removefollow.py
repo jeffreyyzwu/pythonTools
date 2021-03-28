@@ -5,8 +5,7 @@ from log import logger
 import config
 
 def getFollowList(user):
-    url = 'https://t.jd.com/follow/vender/qryCategories.do?qryKey=&_={0}'.format(
-        time.time())
+    url = 'https://t.jd.com/follow/vender/qryCategories.do?qryKey=&_={0}'.format(time.time())
     follows = []
     setHeader(user)
 
@@ -29,11 +28,9 @@ def getFollowList(user):
 
 
     except Exception as ex:
-        logger.error("user:{1}获取店铺关注列表报错, url:{0}".format(url, user["phone"]))
-        logger.error(ex)
+        logger.error("账户:{0}获取店铺关注列表报错, url:{1}，错误信息:{2}".format(user["phone"], url, ex))
 
-    logger.info(follows)
-    logger.info("user:{1}关注店铺总数:{0}".format(len(follows), user["phone"]))
+    logger.info("账户:{0}关注店铺总数:{1}, 具体如下:{2}".format(user["phone"],len(follows), follows))
 
     return follows
 
@@ -45,20 +42,18 @@ def setHeader(user):
 
 
 def removeFollow(user, vendor):
-    url = 'https://t.jd.com/follow/vender/unfollow.do?venderId={0}&_={1}'.format(
-        vendor, time.time())
+    url = 'https://t.jd.com/follow/vender/unfollow.do?venderId={0}&_={1}'.format(vendor, time.time())
     setHeader(user)
 
     try:
         response = request.openUrl(url, user, {})
         content = str(response.read(), 'utf-8')
         # decodeContent = json.loads(content)
-        logger.info(content)
+        logger.info("账户:{0}取消店铺{1}关注, 结果信息:{2}".format(user["phone"], vendor, content))
+
 
     except Exception as ex:
-        logger.error("user:{1}取消店铺关注列表报错, url:{0}".format(url, user["phone"]))
-        logger.error(ex)
-
+        logger.error("账户:{0}取消店铺关注列表报错, url:{1}, 错误信息:{2}".format(user["phone"], url, ex))
 
 def remove(user):
     while True:

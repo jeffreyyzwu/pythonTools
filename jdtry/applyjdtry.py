@@ -17,7 +17,7 @@ def applyAllTryProducts(user, prop):
             notApplyTryProds = excludeProducts(allTryProducts, alreadyApplyTryProducts)
 
             if (notApplyTryProds and len(notApplyTryProds) > 0):
-                logger.info("user:{1}未申请的试用产品:{0}".format(notApplyTryProds, user["phone"]))
+                logger.info("账户:{0}存在以下未申请的试用产品:{1}".format(user["phone"], notApplyTryProds))
                 for prodId in notApplyTryProds:
                     vendorId = getVendorByProductId(user, prodId)
                     followVendor(user, vendorId)
@@ -27,9 +27,7 @@ def applyAllTryProducts(user, prop):
             allTryProducts = []
 
         except Exception as ex:
-            logger.error("applyAllTryProducts")
-            logger.error(ex)
-
+            logger.error("账户：{0}中applyAllTryProducts方法发生错误，信息如下:{1}".format(user["phone"], ex))
 
 
 def excludeProducts(allTryProducts, alreadyApplyTryProducts):
@@ -59,12 +57,8 @@ def getAlreadyApplyTryProduct(allTryProducts, user):
         for item in decodeContent:
             result.append(item["activityId"])
 
-        # logger.info(result)
-
     except Exception as ex:
-        logger.error("获取已申请试用产品报错, url:{0}".format(url))
-        logger.error(content)
-        logger.error(ex)
+        logger.error("账户:{0}获取已申请试用产品时报错, 产品url:{1}, content:{2}, message:{3}".format(user["phone"],url, content, ex))
 
     return result
 
@@ -94,22 +88,19 @@ def getTryProductList(allTryProducts, user, prop, page):
             # logger.info("activityId:{0}".format(activityId))
             if activityId is not None:
                 allTryProducts.append(activityId)
-        logger.info("allTryProducts:{0}".format(allTryProducts))
+        logger.info("账户:{0}获取到所有试用产品如下:{1}".format(user["phone"],allTryProducts))
 
         for result in soup.find_all('span', {"class": "p-skip"}):
             totalPage = int(result.em.b.get_text(strip=True))
-            logger.info("url:{0}总页数:{1}".format(url, totalPage))
+            logger.info("账户:{0}中url:{1}总页数:{2}".format(user["phone"], url, totalPage))
 
     except Exception as ex:
-        logger.error("获取试用产品列表报错, url:{0}".format(url))
-        logger.error(ex)
-        logger.error(content)
+        logger.error("账户:{0}获取已申请试用产品时报错, 产品url:{1}, content:{2}, message:{3}".format(user["phone"],url, content, ex))
 
     return totalPage
 
 def getVendorByProductId(user, prodId):
-    url = 'http://try.jd.com/migrate/getActivityById?id={0}'.format(
-        prodId)
+    url = 'http://try.jd.com/migrate/getActivityById?id={0}'.format(prodId)
     user["headers"].update({
         "Referer": url,
         "Host": "try.jd.com"
@@ -125,7 +116,7 @@ def getVendorByProductId(user, prodId):
             return 0
 
         shopInfo = decodeContent["data"]["shopInfo"]
-        logger.info(shopInfo)
+        logger.info("账户:{0}获取店铺信息:{1}".format(user["phone"], shopInfo))
         
         shopId = shopInfo["shopId"]
         # logger.info("shop id:{0}".format(shopId))
@@ -137,8 +128,7 @@ def getVendorByProductId(user, prodId):
 
 
 def followVendor(user, venderId):
-    url = 'http://try.jd.com/migrate/follow?_s={0}&venderId={1}'.format('pc',
-        venderId)
+    url = 'http://try.jd.com/migrate/follow?_s={0}&venderId={1}'.format('pc', venderId)
     user["headers"].update({
         "Referer": url
     })
@@ -146,11 +136,10 @@ def followVendor(user, venderId):
     response = request.openUrl(url, user, {})
     content = str(response.read(), 'utf-8')
     decodeContent = json.loads(content)
-    logger.info("user:{1}follow shop result:{0}".format(decodeContent, user["phone"]))
+    logger.info("账户:{0}关注店铺结果:{1}".format(user["phone"], decodeContent))
 
 def applyTryProduct(user, prodId):
-    url = 'https://try.jd.com/migrate/apply?activityId={0}&source=0'.format(
-        prodId)
+    url = 'https://try.jd.com/migrate/apply?activityId={0}&source=0'.format(prodId)
     user["headers"].update({
         "Referer": url
     })
@@ -158,16 +147,17 @@ def applyTryProduct(user, prodId):
     response = request.openUrl(url, user, {})
     content = str(response.read(), 'utf-8')
     decodeContent = json.loads(content)
-    logger.info("user:{2}apply product id:{0}, result:{1}".format(prodId, decodeContent, user["phone"]))
+    logger.info("账户:{0}申请试用产品:{1}, 结果:{2}".format(user["phone"],prodId, decodeContent))
 
     status = decodeContent["code"]
     if (status == '-131'):
-        raise Exception('user:{0}apply times is limited'.format(user["phone"]))
+        errMsg = '账户:{0}申请试用已达到当天限制次数'.format(user["phone"])
+        raise Exception(errMsg)
     if (status == '-600'):
         user["token"] = ""
         config.saveUserConfig(user)
-        logger.info("clear token and save to user config file")
-        raise Exception("user:{0}please login first".format(user["phone"]))
+        logger.info("清除token并保存到用户配置文件中")
+        raise Exception("账户:{0}请先登录".format(user["phone"]))
 
 
 def getProductProperty():
@@ -217,11 +207,9 @@ def hottryapply(user):
             applyTryProduct(user, prodId)
 
     except Exception as ex:
-        logger.error("获取试用产品列表报错, url:{0}".format(url))
-        logger.error(ex)
-        logger.error(content)
+        logger.error("账户:{0}获取已申请试用产品时报错, 产品url:{1}, content:{2}, message:{3}".format(user["phone"],url, content, ex))
 
-    logger.info("user:{0}热门试用产品结束申请".format(user["phone"]))
+    logger.info("账户:{0}热门试用产品结束申请".format(user["phone"]))
 
 def apply(user):
     try:

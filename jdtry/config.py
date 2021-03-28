@@ -47,7 +47,7 @@ def getSystem():
     with open('conf/system.json', encoding='utf-8-sig') as json_file:
         sys = json.load(json_file)
         json_file.close()
-        return sys    
+        return sys
 
 
 def checkToken():

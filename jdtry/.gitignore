@@ -1,6 +1,7 @@
-users.json
 system.json
 chromedriver
 /__pycache__/
 .DS_Store
 /log/
+/conf/*.json
+scp.sh

@@ -43,7 +43,7 @@ class jdlogin:
 
             button = browser.find_element_by_id('loginsubmit')
             button.click()
-            time.sleep(35)
+            time.sleep(15)
 
             for cookie in browser.get_cookies():
                 print(cookie)
@@ -77,9 +77,33 @@ class jdlogin:
                 user["token"] = token
                 user["time"] = self._get_current_time()
                 logger.info(user)
-                config.saveUserConfig(user)
+                self._save_user_profile(user)
                 logger.info('获取用户[{0}]token成功,token:[{1}]'.format(user["phone"], user["token"]))
     
+    def _save_user_profile(self, user):
+        phone = user["phone"]
+        logger.info("------保存更新token到users配置文件中--------")
+        try:
+            with open('conf/users.json', mode="r", encoding='utf-8-sig') as json_read_file:
+                usersConfig = json.load(json_read_file)
+                current_user = ''
+                for config in usersConfig:
+                    if (config["phone"] == user["phone"]):
+                        config["token"] = user["token"]
+                        if (user.__contains__("time")):
+                            config["time"] = user["time"]
+                            current_user = config
+                        break
+
+                with open('conf/users.json', mode="w", encoding='utf-8-sig') as json_write_file:
+                    # content = json.dumps([current_user], ensure_ascii=False, indent=4)
+                    json_write_file.write(usersConfig)
+                    json_write_file.close()
+
+                json_read_file.close()
+
+        except Exception as ex:
+            logger.error(ex)        
 
         
 if __name__ == '__main__':
