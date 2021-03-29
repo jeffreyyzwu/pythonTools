@@ -86,24 +86,23 @@ class jdlogin:
         try:
             with open('conf/users.json', mode="r", encoding='utf-8-sig') as json_read_file:
                 usersConfig = json.load(json_read_file)
-                current_user = ''
                 for config in usersConfig:
                     if (config["phone"] == user["phone"]):
                         config["token"] = user["token"]
                         if (user.__contains__("time")):
                             config["time"] = user["time"]
-                            current_user = config
+
                         break
 
                 with open('conf/users.json', mode="w", encoding='utf-8-sig') as json_write_file:
-                    # content = json.dumps([current_user], ensure_ascii=False, indent=4)
-                    json_write_file.write(usersConfig)
+                    content = json.dumps(usersConfig, ensure_ascii=False, indent=4)
+                    json_write_file.write(content)
                     json_write_file.close()
 
                 json_read_file.close()
 
         except Exception as ex:
-            logger.error(ex)        
+            logger.error(ex)     
 
         
 if __name__ == '__main__':

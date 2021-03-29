@@ -58,7 +58,7 @@ def getAlreadyApplyTryProduct(allTryProducts, user):
             result.append(item["activityId"])
 
     except Exception as ex:
-        logger.error("账户:{0}获取已申请试用产品时报错, 产品url:{1}, content:{2}, message:{3}".format(user["phone"],url, content, ex))
+        logger.error("账户:{0}获取已申请试用产品时报错, 产品url:{1}, message:{3}".format(user["phone"],url, ex))
 
     return result
 
@@ -95,7 +95,7 @@ def getTryProductList(allTryProducts, user, prop, page):
             logger.info("账户:{0}中url:{1}总页数:{2}".format(user["phone"], url, totalPage))
 
     except Exception as ex:
-        logger.error("账户:{0}获取已申请试用产品时报错, 产品url:{1}, content:{2}, message:{3}".format(user["phone"],url, content, ex))
+        logger.error("账户:{0}获取已申请试用产品时报错, 产品url:{1}, message:{2}".format(user["phone"],url, ex))
 
     return totalPage
 
@@ -207,7 +207,7 @@ def hottryapply(user):
             applyTryProduct(user, prodId)
 
     except Exception as ex:
-        logger.error("账户:{0}获取已申请试用产品时报错, 产品url:{1}, content:{2}, message:{3}".format(user["phone"],url, content, ex))
+        logger.error("账户:{0}获取已申请试用产品时报错, 产品url:{1}, message:{2}".format(user["phone"],url, ex))
 
     logger.info("账户:{0}热门试用产品结束申请".format(user["phone"]))
 
