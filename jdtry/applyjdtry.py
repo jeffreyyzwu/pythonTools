@@ -58,7 +58,7 @@ def getAlreadyApplyTryProduct(allTryProducts, user):
             result.append(item["activityId"])
 
     except Exception as ex:
-        logger.error("账户:{0}获取已申请试用产品时报错, 产品url:{1}, message:{3}".format(user["phone"],url, ex))
+        logger.error("账户:{0}获取已申请试用产品时报错, 产品url:{1}, message:{2}".format(user["phone"],url, ex))
 
     return result
 
