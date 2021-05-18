@@ -4,6 +4,6 @@
         "password": "",
         "enable": "true",
         "token": "",
-        "excludetitle":[["优惠","满减"]]
+        "exclude-keys":[["优惠","满减"]]
     }
 ]

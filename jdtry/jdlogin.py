@@ -67,7 +67,7 @@ class jdlogin:
 
         for user in self.users:
             token = user["token"]
-            if (len(token) == 0):
+            if (len(token) >= 0):
                 time.sleep(3)
 
                 token = self._login_account_token(user)

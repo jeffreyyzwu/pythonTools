@@ -26,14 +26,14 @@ def sortDinesList(dineList, user):
     sortDines = []
 
     # exclude
-    if 'excludetitle' in user:
+    if 'exclude-keys' in user:
         for dine in reversed(dineList):
-            for excludetitles in user["excludetitle"]:
+            for excludeKeys in user["exclude-keys"]:
                 count = 0
-                for excludetitle in excludetitles:
-                    if excludetitle in dine["name"]:
+                for excludeKey in excludeKeys:
+                    if excludeKey in dine["name"]:
                         count += 1
-                if count == len(excludetitles):
+                if count == len(excludeKeys):
                     dineList.remove(dine)
 
     logger.debug(dineList)
