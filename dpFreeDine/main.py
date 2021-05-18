@@ -14,7 +14,7 @@ def main():
         if (token and len(token) > 0):
             logger.info('--------------用户切换成功:{0},开始报名--------------'.format(user["phone"]))
 
-            freecheckin.checkin(user)
+            #freecheckin.checkin(user)
             freedine.fetchFreeDine(user)
             freebeautytry.fetchFreeBeautyTry(user)
             freefuntry.fetch(user)
