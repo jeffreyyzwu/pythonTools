@@ -21,7 +21,7 @@ def main():
 
             logger.info('--------------用户:{0}报名结束--------------'.format(user["phone"]))
 
-    config.checkToken()
+    #config.checkToken()
     logger.info('--------全部报名结束-----------')
 
 if __name__ == '__main__':
